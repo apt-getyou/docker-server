@@ -1,19 +1,20 @@
 version: '2'
 
 services:
-   db:
-     image: mysql
-     volumes:
-       - "./.data/db:/var/lib/mysql"
-     restart: always
-     ports:
-       - "3306:3306"
-     environment:
-       MYSQL_ROOT_PASSWORD: root
-       MYSQL_USER: user
-       MYSQL_PASSWORD: user
+  db:
+    image: mysql
+    volumes:
+      - "./.data/db:/var/lib/mysql"
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user
+
   redis: 
     image: redis:3
-    ports:
-        - "6379:6379"
+    ports: 
+      - "6379:6379"
     
