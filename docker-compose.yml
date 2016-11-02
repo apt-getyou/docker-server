@@ -14,6 +14,7 @@ services:
       MYSQL_PASSWORD: user
 
   redis: 
+    restart: always
     image: redis:3
     ports: 
       - "6379:6379"
