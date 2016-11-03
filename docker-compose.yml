@@ -21,7 +21,7 @@ services:
 
   nginx:
     restart: always
-    image: nginx
+    image: bitnami/nginx
     volumes:
       - "./.data/nginx/config:/etc/nginx"
       - "./.data/nginx/www:/usr/share/nginx/html"
