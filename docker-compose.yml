@@ -23,7 +23,7 @@ services:
     restart: always
     image: bitnami/nginx
     volumes:
-      - "./.data/nginx/config:/etc/nginx"
-      - "./.data/nginx/www:/usr/share/nginx/html"
+      - "./.data/nginx/config:/bitnami/nginx/conf"
+      - "./.data/nginx/www:/opt/bitnami/nginx/html"
     ports:
       - "80:80"
