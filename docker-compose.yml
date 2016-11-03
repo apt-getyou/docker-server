@@ -22,6 +22,8 @@ services:
   nginx:
     restart: always
     image: nginx
+    volumes:
+      - "./.data/nginx/config:/etc/nginx"
+      - "./.data/nginx/www:/usr/share/nginx/html"
     ports:
       - "80:80"
-    
