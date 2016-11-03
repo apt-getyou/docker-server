@@ -13,9 +13,15 @@ services:
       MYSQL_USER: user
       MYSQL_PASSWORD: user
 
-  redis: 
+  redis:
     restart: always
     image: redis:3
-    ports: 
+    ports:
       - "6379:6379"
+
+  nginx:
+    restart: always
+    image: nginx
+    ports:
+      - "80:80"
     
