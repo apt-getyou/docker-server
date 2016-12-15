@@ -27,3 +27,11 @@ services:
       - "./.data/nginx/www:/opt/bitnami/nginx/html"
     ports:
       - "80:80"
+
+  rabbit1:
+    image: bijukunjummen/rabbitmq-server
+    hostname: rabbit1
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
