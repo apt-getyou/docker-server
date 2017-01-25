@@ -4,3 +4,7 @@
 
 - mysql
 - redis
+- redis web gui
+- nginx
+- rabbitmq
+
