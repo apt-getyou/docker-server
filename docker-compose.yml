@@ -21,6 +21,7 @@ services:
       - "6379:6379"
 
   phpredmin:
+    restart: always
     image: sasanrose/phpredmin
     environment:
         - PHPREDMIN_DATABASE_REDIS_0_HOST=redis
