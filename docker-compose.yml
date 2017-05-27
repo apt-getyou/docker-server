@@ -32,17 +32,60 @@ services:
 
   nginx:
     restart: always
-    image: bitnami/nginx
+    image: nginx
+    links:
+      - kafka:kafka
+      - rabbit1:rabbit1
+      - zookeeper:zk
+    depends_on:
+      - kafka
+      - rabbit1
+      - zookeeper
     volumes:
-      - "./.data/nginx/config:/bitnami/nginx/conf"
-      - "./.data/nginx/www:/opt/bitnami/nginx/html"
+      - "./.data/nginx/conf:/etc/nginx/conf.d"
     ports:
       - "80:80"
 
   rabbit1:
+    restart: always
     image: bijukunjummen/rabbitmq-server
     hostname: rabbit1
     ports:
       - "5672:5672"
       - "15672:15672"
+  
+  zookeeper:
+    restart: always
+    image: wurstmeister/zookeeper
+    ports:
+      - "2181:2181"
 
+  kafka:
+    restart: always
+    image: wurstmeister/kafka
+    links:
+      - zookeeper:zk
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    environment:
+      HOSTNAME_COMMAND: "route -n | awk '/UG[ \t]/{print $$2}'"
+      KAFKA_ADVERTISED_PORT: 9092
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zk:2181
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+  kafka-manager:
+    restart: always
+    image: dockerkafka/kafka-manager
+    depends_on:
+      - zookeeper
+      - kafka
+    links:
+      - zookeeper:zk
+      - kafka:kafka
+    environment:
+      ZK_HOSTS: zk:2181
+    ports:
+      - "9000:9000"
