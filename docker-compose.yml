@@ -90,3 +90,12 @@ services:
       ZK_HOSTS: zk:2181
     ports:
       - "9000:9000"
+
+  mongodb:
+    restart: always
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - "./.data/mongo/db:/data/db"
+      - "./.data/mongo/configdb:/data/configdb"
