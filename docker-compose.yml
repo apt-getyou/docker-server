@@ -8,6 +8,8 @@ services:
       - "./.data/db:/var/lib/mysql"
       - "/etc/localtime:/etc/localtime:ro"
     restart: always
+    ports:
+      - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_USER: user
@@ -16,98 +18,75 @@ services:
   redis:
     restart: always
     image: redis:3
+    ports:
+      - "6379:6379"
 
+  phpredmin:
+    restart: always
+    image: sasanrose/phpredmin
+    environment:
+        - PHPREDMIN_DATABASE_REDIS_0_HOST=redis
+    ports:
+        - "8090:80"
+    depends_on:
+        - redis
+
+  nginx:
+    restart: always
+    image: nginx
+    links:
+      - kafka:kafka
+      - rabbit1:rabbit1
+      - zookeeper:zk
+    depends_on:
+      - kafka
+      - rabbit1
+      - zookeeper
+    volumes:
+      - "./.data/nginx/conf:/etc/nginx/conf.d"
+    ports:
+      - "80:80"
 
   rabbit1:
     restart: always
     image: bijukunjummen/rabbitmq-server
     hostname: rabbit1
+    ports:
+      - "5672:5672"
+      - "15672:15672"
   
   zookeeper:
     restart: always
     image: wurstmeister/zookeeper
-  
+    ports:
+      - "2181:2181"
+
   kafka:
     restart: always
     image: wurstmeister/kafka
     links:
       - zookeeper:zk
+    ports:
+      - "9092:9092"
     depends_on:
       - zookeeper
     environment:
-      KAFKA_ADVERTISED_HOST_NAME: "kafka"
+      KAFKA_ADVERTISED_HOST_NAME: 192.168.33.10 
       KAFKA_ADVERTISED_PORT: 9092
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zk:2181
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-
-  tomcat_socket:
+  kafka-manager:
     restart: always
-    build: ./build/tomcat/
-    volumes:
-      - ./.data/liner/:/opt/xipinconf/zl/liner
-      - ./.data/webapps/socket:/opt/tomcat/webapps
+    image: dockerkafka/kafka-manager
     depends_on:
-      - redis
-      - db
       - zookeeper
       - kafka
     links:
-      - rabbit1:rabbit1
+      - zookeeper:zk
       - kafka:kafka
-
-  tomcat_log:
-    restart: always
-    build: ./build/tomcat/
-    volumes:
-      - ./.data/liner/:/opt/xipinconf/zl/liner
-      - ./.data/webapps/log:/opt/tomcat/webapps
-    depends_on:
-      - redis
-      - db
-      - zookeeper
-      - kafka
-      - tomcat_socket
-    links:
-      - rabbit1:rabbit1
-      - kafka:kafka
-      - tomcat_socket:tomcat_socket
-
-  tomcat_fee:
-    restart: always
-    build: ./build/tomcat/
-    volumes:
-      - ./.data/liner/:/opt/xipinconf/zl/liner
-      - ./.data/webapps/fee:/opt/tomcat/webapps
-    depends_on:
-      - redis
-      - db
-      - zookeeper
-      - kafka
-      - tomcat_socket
-    links:
-      - rabbit1:rabbit1
-      - kafka:kafka
-      - tomcat_socket:tomcat_socket
-
-  tomcat_web:
-    restart: always
-    build: ./build/tomcat/
-    volumes:
-      - ./.data/liner/:/opt/xipinconf/zl/liner
-      - ./.data/webapps/web:/opt/tomcat/webapps
-    depends_on:
-      - redis
-      - db
-      - zookeeper
-      - kafka
-      - tomcat_socket
-      - tomcat_log
-    links:
-      - rabbit1:rabbit1
-      - kafka:kafka
-      - tomcat_socket:tomcat_socket
-      - tomcat_log:tomcat_log
+    environment:
+      ZK_HOSTS: zk:2181
     ports:
-      - 8080:8080
+      - "9000:9000"
