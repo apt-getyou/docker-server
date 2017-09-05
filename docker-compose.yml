@@ -15,11 +15,23 @@ services:
       MYSQL_USER: user
       MYSQL_PASSWORD: user
 
-  redis:
-    restart: always
+  redis-master:
     image: redis:3
     ports:
-      - "6379:6379"
+      - 6379:6379
+    restart: always
+
+  redis-sentinel:
+    restart: always
+    build: sentinel
+    environment:
+      - SENTINEL_DOWN_AFTER=5000
+      - SENTINEL_FAILOVER=5000
+      - SENTINEL_HOST=192.168.33.10
+    links:
+      - redis-master:redis-master
+    ports:
+      - 26379:26379  
 
   phpredmin:
     restart: always
@@ -29,7 +41,7 @@ services:
     ports:
         - "8090:80"
     depends_on:
-        - redis
+        - redis-master
 
   nginx:
     restart: always
