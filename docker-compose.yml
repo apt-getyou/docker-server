@@ -91,19 +91,6 @@ services:
       KAFKA_HEAP_OPTS: "-Xmx256M -Xms128M"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-  kafka-manager:
-    restart: always
-    image: dockerkafka/kafka-manager
-    depends_on:
-      - zookeeper
-      - kafka
-    links:
-      - zookeeper:zk
-      - kafka:kafka
-    environment:
-      ZK_HOSTS: zk:2181
-    ports:
-      - "9000:9000"
 
   mongodb:
     restart: always
