@@ -100,3 +100,8 @@ services:
     volumes:
       - "./.data/mongo/db:/data/db"
       - "./.data/mongo/configdb:/data/configdb"
+  reverseproxy:
+    restart: always
+    image: ilanyu/golang-reverseproxy
+    ports:
+      - "8888:8888"
