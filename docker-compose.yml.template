@@ -8,6 +8,7 @@ services:
       - "./.data/db:/var/lib/mysql"
       - "/etc/localtime:/etc/localtime:ro"
       - "./.data/dbconf:/etc/mysql/conf.d"
+      - "./mysqlconfig/my.cnf:/etc/mysql/my.cnf"
     restart: always
     ports:
       - "3306:3306"
